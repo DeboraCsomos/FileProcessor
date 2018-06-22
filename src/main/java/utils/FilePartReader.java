@@ -1,23 +1,28 @@
 package utils;
 
-import java.io.*;
-import java.nio.file.Files;
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Random;
 
 import static java.lang.Math.toIntExact;
 import static java.nio.file.Files.lines;
 
-public class FilePartReader {
+public class FilePartReader implements Reader {
 
     private FileReader fileReader;
     private int totalLineNumber;
     private int linesToProcess;
     private Locale language;
 
-    public FilePartReader(String filePath) {
+
+    FilePartReader(String filePath) {
         try {
             this.fileReader = new FileReader(filePath);
         } catch (FileNotFoundException exp) {
@@ -37,14 +42,35 @@ public class FilePartReader {
 
     }
 
-    public FilePartReader(String filePath, int linesToProcess) {
+    FilePartReader(String filePath, int linesToProcess) {
         this(filePath);
         this.linesToProcess = linesToProcess;
     }
 
-    public FilePartReader(String filePath, int linesToProcess, String language) {
+    FilePartReader(String filePath, int linesToProcess, String language) {
         this(filePath, linesToProcess);
         this.language = new Locale(language);
+    }
+
+    public List<String> read() {
+        List<String> content = new ArrayList<>();
+        BufferedReader reader = new BufferedReader(fileReader);
+        String line = null;
+        int lineCount = 0;
+        while (lineCount < linesToProcess) {
+            try {
+                line = reader.readLine();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            content.add(line);
+            lineCount++;
+        }
+        return content;
+    }
+
+    public Locale getLanguage() {
+        return language;
     }
 
     @Override
