@@ -8,18 +8,18 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Random;
 
 import static java.lang.Math.toIntExact;
 import static java.nio.file.Files.lines;
+import static model.Language.HU;
 
 public class MyFilePartReader implements MyReader {
 
     private FileReader fileReader;
     private int totalLineNumber;
     private int linesToProcess;
-    private Locale language;
+    private Language language;
 
 
     MyFilePartReader(String filePath) {
@@ -37,7 +37,7 @@ public class MyFilePartReader implements MyReader {
         }
         Random random = new Random();
         this.linesToProcess = random.nextInt(totalLineNumber);
-        this.language = new Locale("hu");
+        this.language = HU;
 
 
     }
@@ -47,9 +47,9 @@ public class MyFilePartReader implements MyReader {
         this.linesToProcess = linesToProcess;
     }
 
-    MyFilePartReader(String filePath, int linesToProcess, String language) {
+    public MyFilePartReader(String filePath, int linesToProcess, Language language) {
         this(filePath, linesToProcess);
-        this.language = new Locale(language);
+        this.language = language;
     }
 
     public List<String> read() {
@@ -66,7 +66,7 @@ public class MyFilePartReader implements MyReader {
         return content;
     }
 
-    public Locale getLanguage() {
+    public Language getLanguage() {
         return language;
     }
 

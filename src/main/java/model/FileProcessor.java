@@ -6,6 +6,8 @@ import java.util.*;
 
 import static java.lang.Integer.parseInt;
 import static java.util.stream.Collectors.toList;
+import static model.Language.EN;
+import static model.Language.HU;
 
 public class FileProcessor {
     private MyFilePartReader reader;
@@ -36,7 +38,7 @@ public class FileProcessor {
             }
         }
         Collections.sort(numbers);
-        Collator collator = Collator.getInstance(reader.getLanguage());
+        Collator collator = Collator.getInstance(Locale.forLanguageTag(reader.getLanguage().name()));
         words.sort(collator);
 
         content.clear();
@@ -48,7 +50,7 @@ public class FileProcessor {
         MyFilePartReader fpr;
         if (args.length == 0) {
             System.out.println("Mandatory parameter [filePath] is missing. \n" +
-                    "Please provide a valid path to an existing text testfile!");
+                    "Please provide a valid path to an existing tex file!");
             System.exit(1);
         } else if (args.length > 3) {
             System.out.println("Too many parameters!");
@@ -62,19 +64,19 @@ public class FileProcessor {
             if (args.length == 2) {
                 fpr = new MyFilePartReader(filePath, toLine);
             } else {
-                String language = parseLanguage(args[2]);
+                Language language = parseLanguage(args[2]);
                 fpr = new MyFilePartReader(filePath, toLine, language);
             }
         }
         return fpr;
     }
 
-    private String parseLanguage(String langParam) {
-        String language;
-        if (!langParam.equals("hu") && !langParam.equals("en")) {
-            language = "hu";
+    private Language parseLanguage(String langParam) {
+        Language language;
+        if (langParam.toUpperCase().equals(HU.name()) || langParam.toUpperCase().equals(EN.name())) {
+            language = Language.valueOf(langParam.toUpperCase());
         } else {
-            language = langParam;
+            language = HU;
         }
         return language;
     }
