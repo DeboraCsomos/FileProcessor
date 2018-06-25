@@ -22,7 +22,7 @@ public class MyFilePartReader implements MyReader {
     private Language language;
 
 
-    MyFilePartReader(String filePath) {
+    public MyFilePartReader(String filePath) {
         try {
             this.fileReader = new FileReader(filePath);
         } catch (FileNotFoundException exp) {
@@ -30,8 +30,7 @@ public class MyFilePartReader implements MyReader {
             System.exit(1);
         }
         try {
-            Path path = Paths.get(filePath);
-            totalLineNumber = toIntExact(lines(path).count());
+            this.totalLineNumber = countTotalLinesInFile(filePath);
         } catch (IOException exp) {
             exp.printStackTrace();
         }
@@ -42,9 +41,13 @@ public class MyFilePartReader implements MyReader {
 
     }
 
-    MyFilePartReader(String filePath, int linesToProcess) {
+    public MyFilePartReader(String filePath, int linesToProcess) {
         this(filePath);
-        this.linesToProcess = linesToProcess;
+        if (linesToProcess > totalLineNumber) {
+            this.linesToProcess = totalLineNumber;
+        } else {
+            this.linesToProcess = linesToProcess;
+        }
     }
 
     public MyFilePartReader(String filePath, int linesToProcess, Language language) {
@@ -56,14 +59,20 @@ public class MyFilePartReader implements MyReader {
         List<String> content = new ArrayList<>();
         try (BufferedReader reader = new BufferedReader(fileReader)) {
             String line;
-            for (int i = 0; i < linesToProcess; i++) {
-                line = reader.readLine();
+            int lineCount = 1;
+            while ((line = reader.readLine()) != null && lineCount <= linesToProcess){
                 content.add(line);
+                lineCount++;
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
         return content;
+    }
+
+    private int countTotalLinesInFile(String filePath) throws IOException {
+        Path path = Paths.get(filePath);
+        return toIntExact(lines(path).count());
     }
 
     public Language getLanguage() {
