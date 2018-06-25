@@ -1,4 +1,4 @@
-import utils.FileProcessor;
+import model.FileProcessor;
 
 public class FileProcessorApp {
 

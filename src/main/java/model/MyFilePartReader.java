@@ -1,4 +1,4 @@
-package utils;
+package model;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -14,7 +14,7 @@ import java.util.Random;
 import static java.lang.Math.toIntExact;
 import static java.nio.file.Files.lines;
 
-public class FilePartReader implements Reader {
+public class MyFilePartReader implements MyReader {
 
     private FileReader fileReader;
     private int totalLineNumber;
@@ -22,7 +22,7 @@ public class FilePartReader implements Reader {
     private Locale language;
 
 
-    FilePartReader(String filePath) {
+    MyFilePartReader(String filePath) {
         try {
             this.fileReader = new FileReader(filePath);
         } catch (FileNotFoundException exp) {
@@ -42,29 +42,26 @@ public class FilePartReader implements Reader {
 
     }
 
-    FilePartReader(String filePath, int linesToProcess) {
+    MyFilePartReader(String filePath, int linesToProcess) {
         this(filePath);
         this.linesToProcess = linesToProcess;
     }
 
-    FilePartReader(String filePath, int linesToProcess, String language) {
+    MyFilePartReader(String filePath, int linesToProcess, String language) {
         this(filePath, linesToProcess);
         this.language = new Locale(language);
     }
 
     public List<String> read() {
         List<String> content = new ArrayList<>();
-        BufferedReader reader = new BufferedReader(fileReader);
-        String line = null;
-        int lineCount = 0;
-        while (lineCount < linesToProcess) {
-            try {
+        try (BufferedReader reader = new BufferedReader(fileReader)) {
+            String line;
+            for (int i = 0; i < linesToProcess; i++) {
                 line = reader.readLine();
-            } catch (IOException e) {
-                e.printStackTrace();
+                content.add(line);
             }
-            content.add(line);
-            lineCount++;
+        } catch (IOException e) {
+            e.printStackTrace();
         }
         return content;
     }
