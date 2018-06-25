@@ -1,6 +1,8 @@
 package model;
 
 
+import model.MyFilePartReader.MyFilePartReaderBuilder;
+
 import java.text.Collator;
 import java.util.*;
 
@@ -46,9 +48,8 @@ public class FileProcessor {
         content.addAll(words);
     }
 
-    public MyFilePartReader getReaderByParameters(String[] args) {
-        MyFilePartReader fpr;
-        if (args.length == 0) {
+    private MyFilePartReader getReaderByParameters(String[] args) {
+        if (args.length < 1) {
             System.out.println("Mandatory parameter [filePath] is missing. \n" +
                     "Please provide a valid path to an existing tex file!");
             System.exit(1);
@@ -57,18 +58,16 @@ public class FileProcessor {
             System.exit(1);
         }
         String filePath = args[0];
-        if (args.length == 1) {
-            fpr = new MyFilePartReader(filePath);
-        } else {
+        MyFilePartReaderBuilder builder = new MyFilePartReaderBuilder(filePath);
+        if (args.length > 1) {
             int toLine = parseLineNumber(args[1]);
-            if (args.length == 2) {
-                fpr = new MyFilePartReader(filePath, toLine);
-            } else {
-                Language language = parseLanguage(args[2]);
-                fpr = new MyFilePartReader(filePath, toLine, language);
-            }
+            builder.setLinesToProcess(toLine);
         }
-        return fpr;
+        if (args.length > 2) {
+            Language language = parseLanguage(args[2]);
+            builder.setLanguage(language);
+        }
+        return builder.build();
     }
 
     private Language parseLanguage(String langParam) {

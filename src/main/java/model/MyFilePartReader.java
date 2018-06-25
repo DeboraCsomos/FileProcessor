@@ -16,43 +16,16 @@ import static model.Language.HU;
 
 public class MyFilePartReader implements MyReader {
 
-    private FileReader fileReader;
-    private int totalLineNumber;
-    private int linesToProcess;
-    private Language language;
+    private final FileReader fileReader;
+    private final int totalLineNumber;
+    private final int linesToProcess;
+    private final Language language;
 
-
-    public MyFilePartReader(String filePath) {
-        try {
-            this.fileReader = new FileReader(filePath);
-        } catch (FileNotFoundException exp) {
-            System.out.println("File doesn't exist!");
-            System.exit(1);
-        }
-        try {
-            this.totalLineNumber = countTotalLinesInFile(filePath);
-        } catch (IOException exp) {
-            exp.printStackTrace();
-        }
-        Random random = new Random();
-        this.linesToProcess = random.nextInt(totalLineNumber);
-        this.language = HU;
-
-
-    }
-
-    public MyFilePartReader(String filePath, int linesToProcess) {
-        this(filePath);
-        if (linesToProcess > totalLineNumber) {
-            this.linesToProcess = totalLineNumber;
-        } else {
-            this.linesToProcess = linesToProcess;
-        }
-    }
-
-    public MyFilePartReader(String filePath, int linesToProcess, Language language) {
-        this(filePath, linesToProcess);
-        this.language = language;
+    private MyFilePartReader(MyFilePartReaderBuilder builder) {
+        this.fileReader = builder.fileReader;
+        this.totalLineNumber = builder.totalLineNumber;
+        this.linesToProcess = builder.linesToProcess;
+        this.language = builder.language;
     }
 
     public List<String> read() {
@@ -60,7 +33,7 @@ public class MyFilePartReader implements MyReader {
         try (BufferedReader reader = new BufferedReader(fileReader)) {
             String line;
             int lineCount = 1;
-            while ((line = reader.readLine()) != null && lineCount <= linesToProcess){
+            while ((line = reader.readLine()) != null && lineCount <= linesToProcess) {
                 content.add(line);
                 lineCount++;
             }
@@ -68,11 +41,6 @@ public class MyFilePartReader implements MyReader {
             e.printStackTrace();
         }
         return content;
-    }
-
-    private int countTotalLinesInFile(String filePath) throws IOException {
-        Path path = Paths.get(filePath);
-        return toIntExact(lines(path).count());
     }
 
     public Language getLanguage() {
@@ -84,5 +52,53 @@ public class MyFilePartReader implements MyReader {
         return "totalLineNumber: " + totalLineNumber +
                 ", \nlinesToProcess: " + linesToProcess +
                 ", \nlanguage:" + language;
+    }
+
+    public static class MyFilePartReaderBuilder {
+
+        // mandatory
+        private FileReader fileReader;
+
+        // calculated
+        private int totalLineNumber;
+
+        //optional
+        private int linesToProcess;
+        private Language language;
+
+        public MyFilePartReaderBuilder(String filePath) {
+            try {
+                this.fileReader = new FileReader(filePath);
+                this.totalLineNumber = countTotalLinesInFile(filePath);
+            } catch (FileNotFoundException exp) {
+                System.out.println("File doesn't exist!");
+                System.exit(1);
+            } catch (IOException exp) {
+                exp.printStackTrace();
+            }
+            Random random = new Random();
+            this.linesToProcess = random.nextInt(totalLineNumber);
+            this.language = HU;
+        }
+
+        public MyFilePartReaderBuilder setLinesToProcess(int linesToProcess) {
+            this.linesToProcess = linesToProcess;
+            return this;
+        }
+
+        public MyFilePartReaderBuilder setLanguage(Language language) {
+            this.language = language;
+            return this;
+        }
+
+        public MyFilePartReader build() {
+            return new MyFilePartReader(this);
+        }
+
+        private int countTotalLinesInFile(String filePath) throws IOException {
+            Path path = Paths.get(filePath);
+            return toIntExact(lines(path).count());
+        }
+
     }
 }
