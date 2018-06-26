@@ -27,24 +27,6 @@ public class testFileProcessor {
     public final SystemErrRule systemErrRule = new SystemErrRule().enableLog().mute();
 
 
-//    @Mock
-//    private MyReader reader;
-//    @Mock
-//    private MyWriter writer;
-
-
-//    @Test
-//    public void testProcess() {
-//        when(reader.read()).thenReturn(new ArrayList<>(asList("source", "111", "screen", "ice", "47", "meal")));
-//        List<String> mockContent = reader.read();
-//        doNothing().when(writer).write(mockContent);
-//        String[] args = new String[]{FILE_PATH.concat("testfile_simple"), "4", "hu"};
-//        FileProcessor processor = new FileProcessor(args);
-//        processor.process();
-//        verify(reader).read();
-//        verify(writer).write(mockContent);
-//    }
-
     @Test
     public void testProcessHU() {
         String huFile = "testfile_hu";
@@ -54,7 +36,7 @@ public class testFileProcessor {
         processor.process();
         MyFileReader reader = new MyFilePartReaderBuilder(FILE_PATH.concat("processed_" + huFile)).setLinesToProcess(4).build();
         List<String> content = reader.read();
-        assertThat(content, contains("5", "étel", "sav", "stég"));
+        assertThat(content, contains("5", "d", "dzx", "dzs"));
     }
 
     @Test
@@ -66,7 +48,7 @@ public class testFileProcessor {
         processor.process();
         MyFileReader reader = new MyFilePartReaderBuilder(FILE_PATH.concat("processed_" + huFile)).setLinesToProcess(4).build();
         List<String> content = reader.read();
-        assertThat(content, contains("5", "étel", "sav", "stég"));
+        assertThat(content, contains("5", "d", "dzs", "dzx"));
     }
 
     @Test
