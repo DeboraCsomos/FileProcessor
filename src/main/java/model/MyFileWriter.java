@@ -10,7 +10,7 @@ import java.util.List;
 public class MyFileWriter implements MyWriter {
     private String filePath;
 
-    MyFileWriter(String originalFilePath) {
+    public MyFileWriter(String originalFilePath) {
         Path p = Paths.get(originalFilePath);
         String originalFileName = p.getFileName().toString();
         String fileName = "processed_".concat(originalFileName);
