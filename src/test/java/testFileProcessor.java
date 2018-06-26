@@ -18,7 +18,7 @@ import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 
-@RunWith(MockitoJUnitRunner.class)
+//@RunWith(MockitoJUnitRunner.class)
 public class testFileProcessor {
     private static final String FILE_PATH = "./src/test/testresources/";
     @Rule
@@ -65,20 +65,20 @@ public class testFileProcessor {
         FileProcessor processor = new FileProcessor(new String[]{FILE_PATH.concat("testfile_simple"), "4", "hu"});
         exit.expectSystemExitWithStatus(1);
         exit.checkAssertionAfterwards(() -> assertEquals("Mandatory parameter [filePath] is missing. \n" +
-                "Please provide a valid path to an existing text file!", systemErrRule.getLog()));
+                "Please provide a valid path to an existing text file!\n", systemErrRule.getLog()));
         processor.getReaderByParameters(new String[0]);
 
         systemErrRule.clearLog();
 
         exit.expectSystemExitWithStatus(1);
-        exit.checkAssertionAfterwards(() -> assertEquals("Too many parameters!", systemErrRule.getLog()));
+        exit.checkAssertionAfterwards(() -> assertEquals("Too many parameters!\n", systemErrRule.getLog()));
         processor.getReaderByParameters(new String[4]);
 
         systemErrRule.clearLog();
 
         exit.expectSystemExitWithStatus(1);
         exit.checkAssertionAfterwards(() -> {
-            assertEquals("Second parameter must be a number!", systemErrRule.getLog());
+            assertEquals("Second parameter must be a number!\n", systemErrRule.getLog());
 
         });
         processor.getReaderByParameters(new String[]{FILE_PATH.concat("testfile_simple"), "text"});
@@ -107,7 +107,7 @@ public class testFileProcessor {
         FileProcessor processor = new FileProcessor(new String[]{FILE_PATH.concat("testfile_simple"), "4", "hu"});
         exit.expectSystemExitWithStatus(1);
         exit.checkAssertionAfterwards(() -> {
-            assertEquals("Second parameter must be a number!", systemErrRule.getLog());
+            assertEquals("Second parameter must be a number!\n", systemErrRule.getLog());
 
         });
         systemErrRule.clearLog();

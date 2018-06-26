@@ -52,7 +52,7 @@ public class testFileReader {
     public void testInvalidPath() {
         exit.expectSystemExitWithStatus(1);
         new MyFilePartReaderBuilder("invalid_file_path").build();
-        assertEquals("File doesn't exist!", systemErrRule.getLog());
+        assertEquals("File doesn't exist!\n", systemErrRule.getLog());
     }
 
 }

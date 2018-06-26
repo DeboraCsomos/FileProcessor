@@ -60,11 +60,11 @@ public class FileProcessor {
 
     public MyFileReader getReaderByParameters(String[] args) {
         if (args.length < 1) {
-            System.err.print("Mandatory parameter [filePath] is missing. \n" +
+            System.err.println("Mandatory parameter [filePath] is missing. \n" +
                     "Please provide a valid path to an existing text file!");
             System.exit(1);
         } else if (args.length > 3) {
-            System.err.print("Too many parameters!");
+            System.err.println("Too many parameters!");
             System.exit(1);
         }
         String filePath = args[0];
@@ -91,7 +91,7 @@ public class FileProcessor {
         try {
             toLine = parseInt(lineNumberParam);
         } catch (NumberFormatException exp) {
-            System.err.print("Second parameter must be a number!");
+            System.err.println("Second parameter must be a number!");
             System.exit(1);
         }
         return toLine;

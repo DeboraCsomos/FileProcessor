@@ -61,7 +61,7 @@ public class MyFileReader implements MyReader {
                 this.fileReader = new FileReader(filePath);
                 this.totalLineNumber = countTotalLinesInFile(filePath);
             } catch (FileNotFoundException exp) {
-                System.err.print("File doesn't exist!");
+                System.err.println("File doesn't exist!");
                 System.exit(1);
             } catch (IOException exp) {
                 exp.printStackTrace();
