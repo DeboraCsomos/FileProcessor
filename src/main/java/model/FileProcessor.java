@@ -1,8 +1,9 @@
 package model;
 
 
-import model.MyFilePartReader.MyFilePartReaderBuilder;
+import model.MyFileReader.MyFilePartReaderBuilder;
 
+import java.io.Reader;
 import java.text.Collator;
 import java.util.*;
 
@@ -12,12 +13,21 @@ import static model.Language.EN;
 import static model.Language.HU;
 
 public class FileProcessor {
-    private MyFilePartReader reader;
-    private MyFileWriter writer;
+    private MyReader reader;
+    private MyWriter writer;
+    private Language language;
 
     public FileProcessor(String[] args) {
         this.reader = getReaderByParameters(args);
-        this.writer = new MyFileWriter(args[0]);
+        String filePathParam = args[0];
+        this.writer = new MyFileWriter(filePathParam);
+
+        if (args.length == 3) {
+            String langParam = args[2];
+            this.language = parseLanguage(langParam);
+        } else {
+            this.language = HU;
+        }
     }
 
     public void process() {
@@ -27,7 +37,7 @@ public class FileProcessor {
 
     }
 
-    private void sortContent(List<String> content) {
+    public void sortContent(List<String> content) {
         Set<String> uniqueContent = new HashSet<>(content);
         List<Integer> numbers = new ArrayList<>();
         List<String> words = new ArrayList<>();
@@ -40,7 +50,7 @@ public class FileProcessor {
             }
         }
         Collections.sort(numbers);
-        Collator collator = Collator.getInstance(Locale.forLanguageTag(reader.getLanguage().name()));
+        Collator collator = Collator.getInstance(Locale.forLanguageTag(language.name()));
         words.sort(collator);
 
         content.clear();
@@ -48,13 +58,13 @@ public class FileProcessor {
         content.addAll(words);
     }
 
-    private MyFilePartReader getReaderByParameters(String[] args) {
+    public MyFileReader getReaderByParameters(String[] args) {
         if (args.length < 1) {
-            System.out.println("Mandatory parameter [filePath] is missing. \n" +
-                    "Please provide a valid path to an existing tex file!");
+            System.err.print("Mandatory parameter [filePath] is missing. \n" +
+                    "Please provide a valid path to an existing text file!");
             System.exit(1);
         } else if (args.length > 3) {
-            System.out.println("Too many parameters!");
+            System.err.print("Too many parameters!");
             System.exit(1);
         }
         String filePath = args[0];
@@ -63,14 +73,10 @@ public class FileProcessor {
             int toLine = parseLineNumber(args[1]);
             builder.setLinesToProcess(toLine);
         }
-        if (args.length > 2) {
-            Language language = parseLanguage(args[2]);
-            builder.setLanguage(language);
-        }
         return builder.build();
     }
 
-    private Language parseLanguage(String langParam) {
+    public Language parseLanguage(String langParam) {
         Language language;
         if (langParam.toUpperCase().equals(HU.name()) || langParam.toUpperCase().equals(EN.name())) {
             language = Language.valueOf(langParam.toUpperCase());
@@ -80,12 +86,12 @@ public class FileProcessor {
         return language;
     }
 
-    private int parseLineNumber(String lineNumberParam) {
+    public int parseLineNumber(String lineNumberParam) {
         int toLine = 0;
         try {
             toLine = parseInt(lineNumberParam);
         } catch (NumberFormatException exp) {
-            System.out.println("Second parameter must be a number!");
+            System.err.print("Second parameter must be a number!");
             System.exit(1);
         }
         return toLine;

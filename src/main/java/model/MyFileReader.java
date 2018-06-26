@@ -12,20 +12,17 @@ import java.util.Random;
 
 import static java.lang.Math.toIntExact;
 import static java.nio.file.Files.lines;
-import static model.Language.HU;
 
-public class MyFilePartReader implements MyReader {
+public class MyFileReader implements MyReader {
 
     private final FileReader fileReader;
-    private final int totalLineNumber;
-    private final int linesToProcess;
-    private final Language language;
+    private final long totalLineNumber;
+    private final long linesToProcess;
 
-    private MyFilePartReader(MyFilePartReaderBuilder builder) {
+    private MyFileReader(MyFilePartReaderBuilder builder) {
         this.fileReader = builder.fileReader;
         this.totalLineNumber = builder.totalLineNumber;
         this.linesToProcess = builder.linesToProcess;
-        this.language = builder.language;
     }
 
     public List<String> read() {
@@ -43,61 +40,52 @@ public class MyFilePartReader implements MyReader {
         return content;
     }
 
-    public Language getLanguage() {
-        return language;
-    }
 
     @Override
     public String toString() {
         return "totalLineNumber: " + totalLineNumber +
-                ", \nlinesToProcess: " + linesToProcess +
-                ", \nlanguage:" + language;
+                ", linesToProcess: " + linesToProcess;
     }
 
     public static class MyFilePartReaderBuilder {
 
         // mandatory
         private FileReader fileReader;
-
         // calculated
-        private int totalLineNumber;
-
+        private long totalLineNumber;
         //optional
-        private int linesToProcess;
-        private Language language;
+        private long linesToProcess;
 
         public MyFilePartReaderBuilder(String filePath) {
             try {
                 this.fileReader = new FileReader(filePath);
                 this.totalLineNumber = countTotalLinesInFile(filePath);
             } catch (FileNotFoundException exp) {
-                System.out.println("File doesn't exist!");
+                System.err.print("File doesn't exist!");
                 System.exit(1);
             } catch (IOException exp) {
                 exp.printStackTrace();
             }
             Random random = new Random();
-            this.linesToProcess = random.nextInt(totalLineNumber);
-            this.language = HU;
+            this.linesToProcess = random.nextInt(toIntExact(totalLineNumber) + 1);
         }
 
         public MyFilePartReaderBuilder setLinesToProcess(int linesToProcess) {
-            this.linesToProcess = linesToProcess;
+            if (linesToProcess <= this.totalLineNumber) {
+                this.linesToProcess = linesToProcess;
+            } else {
+                this.linesToProcess = this.totalLineNumber;
+            }
             return this;
         }
 
-        public MyFilePartReaderBuilder setLanguage(Language language) {
-            this.language = language;
-            return this;
+        public MyFileReader build() {
+            return new MyFileReader(this);
         }
 
-        public MyFilePartReader build() {
-            return new MyFilePartReader(this);
-        }
-
-        private int countTotalLinesInFile(String filePath) throws IOException {
+        private long countTotalLinesInFile(String filePath) throws IOException {
             Path path = Paths.get(filePath);
-            return toIntExact(lines(path).count());
+            return lines(path).count();
         }
 
     }
