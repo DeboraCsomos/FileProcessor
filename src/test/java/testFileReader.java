@@ -16,7 +16,7 @@ public class testFileReader {
     @Rule
     public final ExpectedSystemExit exit = ExpectedSystemExit.none();
     @Rule
-    public final SystemErrRule systemErrRule = new SystemErrRule().enableLog();
+    public final SystemErrRule systemErrRule = new SystemErrRule().enableLog().mute();
 
     private static final String FILE_PATH = "./src/test/testresources/";
 
