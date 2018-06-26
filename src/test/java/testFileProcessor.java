@@ -2,13 +2,11 @@ import model.FileProcessor;
 import model.Language;
 import model.MyFileReader;
 import model.MyFileReader.MyFilePartReaderBuilder;
-import model.MyFileWriter;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.contrib.java.lang.system.ExpectedSystemExit;
 import org.junit.contrib.java.lang.system.SystemErrRule;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.ArrayList;
@@ -19,7 +17,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class testFileProcessor {
@@ -28,25 +25,25 @@ public class testFileProcessor {
     public final ExpectedSystemExit exit = ExpectedSystemExit.none();
     @Rule
     public final SystemErrRule systemErrRule = new SystemErrRule().enableLog().mute();
-    @Mock
-    private MyFileReader reader;
-    @Mock
-    private MyFileWriter writer;
 
 
-    @Test
-    public void testProcess() {
-        when(reader.read()).thenReturn(new ArrayList<>(asList("source", "111", "screen", "ice", "47", "meal")));
-        List<String> mockContent = reader.read();
-        doNothing().when(writer).write(mockContent);
-        String[] args = new String[]{FILE_PATH.concat("testfile_simple"), "4", "hu"};
-        FileProcessor processor = new FileProcessor(args);
-        processor.process();
-        verify(reader).read();
-        verify(writer).write(mockContent);
+//    @Mock
+//    private MyReader reader;
+//    @Mock
+//    private MyWriter writer;
 
 
-    }
+//    @Test
+//    public void testProcess() {
+//        when(reader.read()).thenReturn(new ArrayList<>(asList("source", "111", "screen", "ice", "47", "meal")));
+//        List<String> mockContent = reader.read();
+//        doNothing().when(writer).write(mockContent);
+//        String[] args = new String[]{FILE_PATH.concat("testfile_simple"), "4", "hu"};
+//        FileProcessor processor = new FileProcessor(args);
+//        processor.process();
+//        verify(reader).read();
+//        verify(writer).write(mockContent);
+//    }
 
     @Test
     public void testProcessHU() {
@@ -74,12 +71,11 @@ public class testFileProcessor {
 
     @Test
     public void testSortContent() {
-        when(reader.read()).thenReturn(new ArrayList<>(asList("source", "111", "screen", "ice", "47", "Meal")));
-        List<String> mockContent = reader.read();
+        List<String> listToBeSorted = new ArrayList<>(asList("source", "111", "screen", "ice", "47", "Meal"));
         FileProcessor processor = new FileProcessor(new String[]{FILE_PATH.concat("testfile_simple"), "4", "hu"});
-        processor.sortContent(mockContent);
-        assertThat(mockContent.size(), is(6));
-        assertThat(mockContent, contains("47", "111", "ice", "Meal", "screen", "source"));
+        processor.sortContent(listToBeSorted);
+        assertThat(listToBeSorted.size(), is(6));
+        assertThat(listToBeSorted, contains("47", "111", "ice", "Meal", "screen", "source"));
     }
 
     @Test
