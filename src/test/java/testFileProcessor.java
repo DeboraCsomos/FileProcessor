@@ -24,7 +24,7 @@ public class testFileProcessor {
     @Rule
     public final ExpectedSystemExit exit = ExpectedSystemExit.none();
     @Rule
-    public final SystemErrRule systemErrRule = new SystemErrRule().enableLog().mute();
+    public final SystemErrRule systemErrRule = new SystemErrRule().enableLog().muteForSuccessfulTests();
 
 
     @Test
