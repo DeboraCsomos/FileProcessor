@@ -10,7 +10,7 @@ import java.util.Arrays;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.junit.MatcherAssert.assertThat;
 
-public class testFileWriter {
+public class FileWriterTest {
     private static final String FILE_NAME = "testfileForWriter";
     private static final String FILE_PATH = "./src/test/testresources/";
 
