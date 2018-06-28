@@ -1,5 +1,7 @@
 package model;
 
+import lombok.NonNull;
+
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -8,9 +10,9 @@ import java.nio.file.Paths;
 import java.util.List;
 
 public class MyFileWriter implements MyWriter {
-    private String filePath;
+    private final String filePath;
 
-    public MyFileWriter(String originalFilePath) {
+    public MyFileWriter(@NonNull String originalFilePath) {
         Path p = Paths.get(originalFilePath);
         String originalFileName = p.getFileName().toString();
         String fileName = "processed_".concat(originalFileName);

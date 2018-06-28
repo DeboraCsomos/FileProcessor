@@ -1,5 +1,7 @@
 package model;
 
+import lombok.NonNull;
+
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -15,19 +17,30 @@ import static java.nio.file.Files.lines;
 
 public class MyFileReader implements MyReader {
 
-    private final FileReader fileReader;
-    private final long totalLineNumber;
+    private FileReader reader;
     private final long linesToProcess;
 
-    private MyFileReader(MyFilePartReaderBuilder builder) {
-        this.fileReader = builder.fileReader;
-        this.totalLineNumber = builder.totalLineNumber;
-        this.linesToProcess = builder.linesToProcess;
+    public MyFileReader(@NonNull String filePath, Integer linesToProcess){
+        try {
+            this.reader = new FileReader(filePath);
+        } catch (FileNotFoundException e) {
+            System.err.println("File doesn't exist!");
+            System.exit(1);
+        }
+        long totalLineNumber = countTotalLinesInFile(filePath);
+        if (linesToProcess == null) {
+            Random random = new Random();
+            this.linesToProcess = random.nextInt(toIntExact(totalLineNumber) + 1);
+        } else if (linesToProcess > totalLineNumber) {
+            this.linesToProcess = totalLineNumber;
+        } else {
+            this.linesToProcess = linesToProcess;
+        }
     }
 
     public List<String> read() {
         List<String> content = new ArrayList<>();
-        try (BufferedReader reader = new BufferedReader(fileReader)) {
+        try (BufferedReader reader = new BufferedReader(this.reader)) {
             String line;
             int lineCount = 1;
             while ((line = reader.readLine()) != null && lineCount <= linesToProcess) {
@@ -40,53 +53,15 @@ public class MyFileReader implements MyReader {
         return content;
     }
 
-
-    @Override
-    public String toString() {
-        return "totalLineNumber: " + totalLineNumber +
-                ", linesToProcess: " + linesToProcess;
-    }
-
-    public static class MyFilePartReaderBuilder {
-
-        // mandatory
-        private FileReader fileReader;
-        // calculated
-        private long totalLineNumber;
-        //optional
-        private long linesToProcess;
-
-        public MyFilePartReaderBuilder(String filePath) {
-            try {
-                this.fileReader = new FileReader(filePath);
-                this.totalLineNumber = countTotalLinesInFile(filePath);
-            } catch (FileNotFoundException exp) {
-                System.err.println("File doesn't exist!");
-                System.exit(1);
-            } catch (IOException exp) {
-                exp.printStackTrace();
-            }
-            Random random = new Random();
-            this.linesToProcess = random.nextInt(toIntExact(totalLineNumber) + 1);
-        }
-
-        public MyFilePartReaderBuilder setLinesToProcess(int linesToProcess) {
-            if (linesToProcess <= this.totalLineNumber) {
-                this.linesToProcess = linesToProcess;
-            } else {
-                this.linesToProcess = this.totalLineNumber;
-            }
-            return this;
-        }
-
-        public MyFileReader build() {
-            return new MyFileReader(this);
-        }
-
-        private long countTotalLinesInFile(String filePath) throws IOException {
-            Path path = Paths.get(filePath);
+    private long countTotalLinesInFile(String filePath) {
+        Path path = Paths.get(filePath);
+        try {
             return lines(path).count();
+        } catch (IOException e) {
+            System.err.println("An error occurred while reaching the file!");
+            System.exit(1);
+            return 0;
         }
-
     }
+
 }
